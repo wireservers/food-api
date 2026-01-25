@@ -43,8 +43,6 @@ msbuild.wrn
 .env
 .env.local
 .env.*.local
-.github
-/.github
 .claude
 /.claude
 Properties
