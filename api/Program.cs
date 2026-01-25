@@ -33,32 +33,47 @@ else
     }
 }
 
-var mongoUri = Environment.GetEnvironmentVariable("MONGO_URI");
-var dbName = Environment.GetEnvironmentVariable("DB_NAME");
-Console.WriteLine($"[DEBUG] MONGO_URI: {(string.IsNullOrEmpty(mongoUri) ? "NOT SET" : "SET (length: " + mongoUri.Length + ")")}");
-Console.WriteLine($"[DEBUG] DB_NAME: {dbName ?? "NOT SET"}");
-
-// Configure MongoDB settings
+// Configure MongoDB settings from appsettings (environment-specific) with env var override
 builder.Services.Configure<MongoDbSettings>(options =>
 {
-    options.ConnectionString = Environment.GetEnvironmentVariable("MONGO_URI") ?? "";
-    options.DatabaseName = Environment.GetEnvironmentVariable("DB_NAME") ?? "";
-    options.Collections.Foods = Environment.GetEnvironmentVariable("DB_FOODS_COLLECTION") ?? "foundationfoods";
-    options.Collections.Nutrition = Environment.GetEnvironmentVariable("DB_NUTRITION_COLLECTION") ?? "nutritionfacts";
-    options.Collections.Recipes = Environment.GetEnvironmentVariable("DB_RECIPES_COLLECTION") ?? "recipes";
-    options.Collections.Diets = Environment.GetEnvironmentVariable("DB_DIETS_COLLECTION") ?? "diettypes";
-    options.Collections.Blog = Environment.GetEnvironmentVariable("DB_BLOG_COLLECTION") ?? "blogposts";
-    options.Collections.MealPlans = Environment.GetEnvironmentVariable("DB_MEALPLANS_COLLECTION") ?? "mealplans";
-    options.Collections.Users = Environment.GetEnvironmentVariable("DB_USERS_COLLECTION") ?? "users";
-    options.Collections.Roles = Environment.GetEnvironmentVariable("DB_ROLES_COLLECTION") ?? "roles";
-    options.Collections.Permissions = Environment.GetEnvironmentVariable("DB_PERMISSIONS_COLLECTION") ?? "permissions";
-    options.Collections.AuditLogs = Environment.GetEnvironmentVariable("DB_AUDIT_COLLECTION") ?? "auditlogs";
+    // Priority: Environment Variables > appsettings.{Environment}.json > appsettings.json
+    var mongoSection = builder.Configuration.GetSection("MongoDB");
+
+    options.ConnectionString = Environment.GetEnvironmentVariable("MONGO_URI")
+        ?? mongoSection["ConnectionString"]
+        ?? "";
+
+    options.DatabaseName = Environment.GetEnvironmentVariable("DB_NAME")
+        ?? mongoSection["DatabaseName"]
+        ?? "";
+
+    options.Collections.Foods = mongoSection["Collections:Foods"] ?? "foundationfoods";
+    options.Collections.Nutrition = mongoSection["Collections:Nutrition"] ?? "nutritionfacts";
+    options.Collections.Recipes = mongoSection["Collections:Recipes"] ?? "recipes";
+    options.Collections.Diets = mongoSection["Collections:Diets"] ?? "diettypes";
+    options.Collections.Blog = mongoSection["Collections:Blog"] ?? "blogposts";
+    options.Collections.MealPlans = mongoSection["Collections:MealPlans"] ?? "mealplans";
+    options.Collections.Users = mongoSection["Collections:Users"] ?? "users";
+    options.Collections.Roles = mongoSection["Collections:Roles"] ?? "roles";
+    options.Collections.Permissions = mongoSection["Collections:Permissions"] ?? "permissions";
+    options.Collections.AuditLogs = mongoSection["Collections:AuditLogs"] ?? "auditlogs";
+
+    Console.WriteLine($"[INFO] Environment: {builder.Environment.EnvironmentName}");
+    Console.WriteLine($"[INFO] Database: {options.DatabaseName}");
+    Console.WriteLine($"[INFO] Connection String: {(string.IsNullOrEmpty(options.ConnectionString) ? "NOT SET" : "SET")}");
 });
 
 // Register MongoDB client as singleton
 builder.Services.AddSingleton<IMongoClient>(sp =>
 {
-    var connectionString = Environment.GetEnvironmentVariable("MONGO_URI") ?? "";
+    var mongoConfig = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<MongoDbSettings>>().Value;
+    var connectionString = mongoConfig.ConnectionString;
+
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException("MongoDB connection string is not configured. Set MONGO_URI environment variable or configure in appsettings.json");
+    }
+
     var settings = MongoClientSettings.FromConnectionString(connectionString);
     settings.ServerSelectionTimeout = TimeSpan.FromSeconds(60);
     settings.ConnectTimeout = TimeSpan.FromSeconds(10);

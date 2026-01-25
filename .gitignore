@@ -3,6 +3,10 @@
 #Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
 
+# Codacy - ignore cache but keep cli script
+.codacy/*
+!.codacy/cli.sh
+
 # Temporary files
 *.swp
 *.*~
@@ -48,4 +52,3 @@ msbuild.wrn
 Properties
 /api/Properties
 /api/Properties/*.json
-api/appsettings.Development.json
