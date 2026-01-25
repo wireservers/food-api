@@ -120,6 +120,12 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddHttpsRedirection(options =>
+{
+    options.HttpsPort = 5001;
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
@@ -144,7 +150,7 @@ app.UseCors("AllowAll");
 app.UseAuthorization();
 app.MapControllers();
 
-app.MapGet("/", () => new { Message = "Welcome to Bring The Diet APIß" });
+app.MapGet("/", () => Results.Ok("Welcome to Bring The Diet APIß"));
 
 
 app.Run();
