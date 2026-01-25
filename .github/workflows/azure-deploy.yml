@@ -29,22 +29,19 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Restore dependencies
-      working-directory: ./api
-      run: dotnet restore
+      run: dotnet restore api/BringTheDiet.Api.csproj
 
     - name: Build
-      working-directory: ./api
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build api/BringTheDiet.Api.csproj --configuration Release --no-restore
 
     - name: Publish
-      working-directory: ./api
-      run: dotnet publish --configuration Release --no-build --output ./publish
+      run: dotnet publish api/BringTheDiet.Api.csproj --configuration Release --no-build --output ./publish
 
     - name: Upload artifact for deployment
       uses: actions/upload-artifact@v4
       with:
         name: dotnet-app
-        path: ./api/publish
+        path: ./publish
 
   deploy:
     runs-on: ubuntu-latest
