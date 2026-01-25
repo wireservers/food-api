@@ -21,8 +21,8 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore ./api/BringTheDiet.Api.csproj
+      run: dotnet restore api/BringTheDiet.Api.csproj
     - name: Build
-      run: dotnet build ./api/BringTheDiet.Api.csproj --no-restore
+      run: dotnet build api/BringTheDiet.Api.csproj --no-restore
     - name: Test
-      run: dotnet test ./api/BringTheDiet.Api.csproj --no-build --verbosity normal
+      run: dotnet test api/BringTheDiet.Api.csproj --no-build --verbosity normal
