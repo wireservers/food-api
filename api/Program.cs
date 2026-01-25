@@ -144,4 +144,7 @@ app.UseCors("AllowAll");
 app.UseAuthorization();
 app.MapControllers();
 
+app.MapGet("/", () => new { Message = "Welcome to Bring The Diet APIß" });
+
+
 app.Run();
