@@ -1,127 +1,161 @@
-# Food API
+# Bring The Diet API
 
-[![.NET](https://github.com/todd-ws/food-api/actions/workflows/dotnet.yml/badge.svg)](https://github.com/todd-ws/food-api/actions/workflows/dotnet.yml)
+A RESTful .NET 10 Web API with CRUD operations using MongoDB (Azure Cosmos DB) and Entity Framework Core concepts.
 
-A comprehensive food and nutrition API repository featuring two implementations:
-- **Bring The Diet API** - A .NET 10 Web API with CRUD operations for foods, recipes, users, and meal plans
-- **Food API (Split Collections)** - A Node.js API with separate collections for foods and nutrients
+## Features
 
-## 📁 Repository Structure
-
-This repository contains two distinct API implementations:
-
-### 1. [Bring The Diet API](/api) (.NET 10)
-
-A RESTful .NET 10 Web API with full CRUD operations using MongoDB (Azure Cosmos DB compatible).
-
-**Features:**
-- ✅ RESTful API with Foods, Recipes, Users, and Meal Plans endpoints
-- ✅ MongoDB integration with repository pattern
+- ✅ RESTful API with full CRUD operations
+- ✅ MongoDB integration (Azure Cosmos DB compatible)
+- ✅ Repository pattern for data access
 - ✅ Swagger/OpenAPI documentation
+- ✅ Environment variable configuration (.env file)
 - ✅ Password hashing with BCrypt
-- ✅ Comprehensive pagination support
-- ✅ Environment variable configuration
+- ✅ CORS enabled
+- ✅ Comprehensive error handling and logging
 
-**Quick Start:**
-```bash
-cd api
-dotnet restore
-dotnet build
-dotnet run
+## Project Structure
+
+```
+├── Configuration/       # Application settings and configuration
+├── Controllers/         # API endpoints (Foods, Recipes, Users, MealPlans)
+├── DTOs/               # Data Transfer Objects
+├── Models/             # Database entity models
+├── Repositories/       # Data access layer
+├── Services/           # Business logic and database services
+├── Program.cs          # Application entry point
+└── appsettings.json    # Configuration file
 ```
 
-📖 [Full Documentation](/api/README.md) | 📝 [API Examples](/api/API_EXAMPLES.md)
+## API Endpoints
 
-### 2. [Food API (Split Collections)](/Azure%20Cosmos%20DB) (Node.js)
+All list endpoints support **pagination** with query parameters:
+- `?page={number}` - Page number (1-based, default: 1)
+- `?pageSize={number}` - Items per page (default: 20, max: 100)
 
-A Node.js implementation with separate collections for foods and nutrients, including data import scripts and E2E tests.
+Example: `GET /api/foods?page=2&pageSize=50`
 
-**Features:**
-- ✅ Split collections design (Foods ↔ Nutrients)
-- ✅ CRUD operations for both entities
-- ✅ Nested relation endpoints
-- ✅ Data import scripts with chunking
-- ✅ Jest E2E tests
-- ✅ Postman collection included
+### Foods
+- `GET /api/foods?page={page}&pageSize={pageSize}` - Get paginated foods
+- `GET /api/foods/{id}` - Get food by ID
+- `GET /api/foods/search?term={term}` - Search foods by description
+- `POST /api/foods` - Create a new food
+- `PUT /api/foods/{id}` - Update a food
+- `DELETE /api/foods/{id}` - Delete a food
 
-**Quick Start:**
-```bash
-cd "Azure Cosmos DB"
-cp .env.example .env
-npm install
-npm run start
-```
+### Recipes
+- `GET /api/recipes?page={page}&pageSize={pageSize}` - Get paginated recipes
+- `GET /api/recipes/{id}` - Get recipe by ID
+- `GET /api/recipes/search?term={term}` - Search recipes by name
+- `POST /api/recipes` - Create a new recipe
+- `PUT /api/recipes/{id}` - Update a recipe
+- `DELETE /api/recipes/{id}` - Delete a recipe
 
-📖 [Full Documentation](/Azure%20Cosmos%20DB/README.md)
+### Users
+- `GET /api/users?page={page}&pageSize={pageSize}` - Get paginated users
+- `GET /api/users/{id}` - Get user by ID
+- `GET /api/users/username/{username}` - Get user by username
+- `POST /api/users` - Create a new user
+- `PUT /api/users/{id}` - Update a user
+- `DELETE /api/users/{id}` - Delete a user
 
-## 🚀 Getting Started
+### Meal Plans
+- `GET /api/mealplans?page={page}&pageSize={pageSize}` - Get paginated meal plans
+- `GET /api/mealplans/{id}` - Get meal plan by ID
+- `GET /api/mealplans/user/{userId}` - Get meal plans by user ID
+- `POST /api/mealplans` - Create a new meal plan
+- `PUT /api/mealplans/{id}` - Update a meal plan
+- `DELETE /api/mealplans/{id}` - Delete a meal plan
 
-1. **Choose your implementation:**
-   - For a full-featured meal planning and recipe API → Use the [.NET API](/api)
-   - For a nutrition-focused foods and nutrients API → Use the [Node.js API](/Azure%20Cosmos%20DB)
+## Getting Started
 
-2. **Set up MongoDB/Azure Cosmos DB:**
-   - Both implementations require a MongoDB or Azure Cosmos DB instance
-   - Configure connection strings in `.env` files
+### Prerequisites
 
-3. **Follow the specific README** for your chosen implementation
+- .NET 10 SDK
+- MongoDB or Azure Cosmos DB for MongoDB account
 
-## 🛠️ Technologies
+### Installation
 
-### .NET API
+1. Clone the repository
+2. Ensure your `.env` file is properly configured with your MongoDB connection string
+3. Restore dependencies:
+   ```bash
+   dotnet restore
+   ```
+4. Build the project:
+   ```bash
+   dotnet build
+   ```
+5. Run the application:
+   ```bash
+   dotnet run
+   ```
+
+The API will be available at `https://localhost:7xxx` (HTTPS) and `http://localhost:5xxx` (HTTP).
+
+### Swagger Documentation
+
+Once running, navigate to `https://localhost:7xxx/swagger` to view the interactive API documentation.
+
+## Environment Variables
+
+The application reads the following variables from the `.env` file:
+
+- `MONGO_URI` - MongoDB connection string
+- `DB_NAME` - Database name
+- `DB_FOODS_COLLECTION` - Foods collection name
+- `DB_RECIPES_COLLECTION` - Recipes collection name
+- `DB_USERS_COLLECTION` - Users collection name
+- `DB_MEALPLANS_COLLECTION` - Meal plans collection name
+
+## Database Models
+
+### Food
+- Foundation foods from USDA database
+- Includes nutritional information, serving sizes, and ingredients
+
+### Recipe
+- Custom recipes with ingredients and instructions
+- Prep time, cook time, and serving information
+- Cuisine and difficulty level
+
+### User
+- User authentication and profile information
+- Dietary preferences and restrictions
+- Allergy information
+
+### Meal Plan
+- User-specific meal planning
+- Date range and meal scheduling
+- Links to recipes
+
+## Technologies Used
+
 - .NET 10
 - MongoDB.Driver 3.2.0
-- Swagger/OpenAPI
-- BCrypt for password hashing
+- Swashbuckle.AspNetCore 7.2.0 (Swagger)
+- DotNetEnv 3.1.1
+- BCrypt.Net-Next 4.0.3
 
-### Node.js API
-- Node.js
-- MongoDB/Azure Cosmos DB
-- Jest for testing
-- Express.js
+## Development
 
-## 📚 API Endpoints
+The API uses the repository pattern for data access, making it easy to:
+- Unit test business logic
+- Swap data providers if needed
+- Maintain clean separation of concerns
 
-### .NET API Endpoints
-- Foods: CRUD, search, pagination
-- Recipes: CRUD, search, meal planning
-- Users: User management, preferences, dietary restrictions
-- Meal Plans: User-specific meal planning and scheduling
+## Security Notes
 
-### Node.js API Endpoints
-- Foods: CRUD, search, with optional nutrient inclusion
-- Nutrients: CRUD, filtering by food or nutrient ID
-- Nested endpoints for food-nutrient relationships
+- Passwords are hashed using BCrypt
+- CORS is currently set to allow all origins (configure appropriately for production)
+- Consider adding authentication/authorization middleware for production use
+- The `.env` file is gitignored to protect sensitive credentials
 
-## 🔒 Security
+## Future Enhancements
 
-- Both APIs use environment variables for sensitive configuration
-- .NET API implements password hashing with BCrypt
-- `.env` files are gitignored to protect credentials
-- GitHub Actions workflow for continuous integration
-
-## 📦 CI/CD
-
-This repository includes a GitHub Actions workflow that:
-- Builds the .NET project on push and pull requests
-- Runs automated tests
-- Ensures code quality
-
-## 🤝 Contributing
-
-When contributing to this repository:
-1. Follow the existing code style and patterns
-2. Update documentation for any API changes
-3. Ensure tests pass before submitting pull requests
-4. Keep both implementations' documentation in sync with changes
-
-## 📄 License
-
-See individual project directories for licensing information.
-
-## 🔗 Related Resources
-
-- [MongoDB Documentation](https://docs.mongodb.com/)
-- [Azure Cosmos DB for MongoDB](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/introduction)
-- [.NET Documentation](https://docs.microsoft.com/en-us/dotnet/)
-- [Node.js Documentation](https://nodejs.org/en/docs/)
+- [ ] Add JWT authentication
+- [ ] Implement pagination for list endpoints
+- [ ] Add data validation attributes
+- [ ] Implement caching
+- [ ] Add rate limiting
+- [ ] Add comprehensive unit and integration tests
+- [ ] Add health check endpoints

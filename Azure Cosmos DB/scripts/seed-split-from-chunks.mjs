@@ -1,6 +1,0 @@
-import fs from "fs"; import path from "path"; import "dotenv/config"; import mongoose from "mongoose"; import { Food } from "../src/models/food.model.mjs"; import { Nutrient } from "../src/models/nutrient.model.mjs";
-const MONGO_URI=process.env.MONGO_URI; if(!MONGO_URI){console.error("MONGO_URI is required");process.exit(1);}
-const CHUNKS_DIR="data/chunks";
-async function seedFile(filename, model){ const lines=(await fs.promises.readFile(filename,"utf-8")).split(/\r?\n/).filter(Boolean); const docs=lines.map(l=>JSON.parse(l)); if(docs.length) await model.insertMany(docs,{ordered:false}); return docs.length; }
-async function run(){ await mongoose.connect(MONGO_URI); const files=(await fs.promises.readdir(CHUNKS_DIR)).filter(f=>f.endsWith(".ndjson")).sort(); let foods=0, nutrients=0; for(const f of files){ const full=path.join(CHUNKS_DIR,f); if(f.startsWith("foods_") || f.startsWith("foods")){ foods+=await seedFile(full, Food); } else if(f.startsWith("nutrients_") || f.startsWith("nutrients")) { nutrients+=await seedFile(full, Nutrient); } } console.log("Inserted foods:",foods,"nutrients:",nutrients); await mongoose.disconnect(); }
-run().catch(e=>{console.error(e);process.exit(1);});

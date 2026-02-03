@@ -1,0 +1,37 @@
+name: .NET Build & Test
+
+on:
+  push:
+    branches: [ main, dev ]
+    paths:
+      - 'food-api/**'
+      - '.github/workflows/dotnet-build.yml'
+  pull_request:
+    branches: [ main, dev ]
+    paths:
+      - 'food-api/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./food-api
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Test
+      run: dotnet test --no-build --configuration Release --verbosity normal
+      continue-on-error: true  # Continue even if no tests exist yet
