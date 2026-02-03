@@ -84,3 +84,4 @@ jobs:
       - name: Azure Logout
         run: az logout
         if: always()
+        continue-on-error: true
