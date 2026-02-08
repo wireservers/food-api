@@ -1,0 +1,218 @@
+@baseUrl = http://localhost:5050
+
+### ============================================================
+### ROOT
+### ============================================================
+
+### Health check
+GET {{baseUrl}}/
+
+### ============================================================
+### FOODS (452K records)
+### ============================================================
+
+### List foods (paginated)
+GET {{baseUrl}}/api/foods?page=1&pageSize=10
+
+### Get food by ID
+GET {{baseUrl}}/api/foods/{{foodId}}
+
+### Search foods
+GET {{baseUrl}}/api/foods/search?term=chicken
+
+### Create food
+POST {{baseUrl}}/api/foods
+Content-Type: application/json
+
+{
+  "fdcId": 999999,
+  "description": "Debug Test Food",
+  "foodClass": "Test",
+  "dataType": "test_data"
+}
+
+### Update food
+PUT {{baseUrl}}/api/foods/{{foodId}}
+Content-Type: application/json
+
+{
+  "description": "Updated Debug Test Food"
+}
+
+### Delete food
+DELETE {{baseUrl}}/api/foods/{{foodId}}
+
+### ============================================================
+### NUTRIENTS (109 records)
+### ============================================================
+
+### List nutrients (default pageSize=100)
+GET {{baseUrl}}/api/nutrients?page=1&pageSize=100
+
+### Get nutrient by ID
+GET {{baseUrl}}/api/nutrients/{{nutrientId}}
+
+### Get nutrient by number
+GET {{baseUrl}}/api/nutrients/by-number/203
+
+### Search nutrients
+GET {{baseUrl}}/api/nutrients/search?term=protein
+
+### ============================================================
+### FOOD NUTRIENTS (12.5M records - use caution)
+### ============================================================
+
+### List food nutrients (paginated)
+GET {{baseUrl}}/api/foodnutrients?page=1&pageSize=5
+
+### Get nutrients for a specific food
+GET {{baseUrl}}/api/foodnutrients/by-food/{{foodId}}
+
+### Get food with all nutrient details
+GET {{baseUrl}}/api/foodnutrients/food-with-nutrients/{{foodId}}
+
+### Create food-nutrient relationship
+POST {{baseUrl}}/api/foodnutrients
+Content-Type: application/json
+
+{
+  "foodId": "{{foodId}}",
+  "nutrientId": "{{nutrientId}}",
+  "amount": 25.5,
+  "derivationDescription": "Analytical data"
+}
+
+### Bulk create food nutrients
+POST {{baseUrl}}/api/foodnutrients/bulk
+Content-Type: application/json
+
+{
+  "foodId": "{{foodId}}",
+  "nutrients": [
+    {
+      "nutrientId": "{{nutrientId}}",
+      "amount": 10.0,
+      "derivationDescription": "Analytical data"
+    }
+  ]
+}
+
+### Delete all nutrients for a food
+DELETE {{baseUrl}}/api/foodnutrients/by-food/{{foodId}}
+
+### ============================================================
+### RECIPES
+### ============================================================
+
+### List recipes (paginated)
+GET {{baseUrl}}/api/recipes?page=1&pageSize=10
+
+### Get recipe by ID
+GET {{baseUrl}}/api/recipes/{{recipeId}}
+
+### Search recipes
+GET {{baseUrl}}/api/recipes/search?term=salad
+
+### Create recipe
+POST {{baseUrl}}/api/recipes
+Content-Type: application/json
+
+{
+  "name": "Debug Test Recipe",
+  "description": "A test recipe for debugging",
+  "instructions": "Step 1: Test",
+  "ingredients": []
+}
+
+### Update recipe
+PUT {{baseUrl}}/api/recipes/{{recipeId}}
+Content-Type: application/json
+
+{
+  "name": "Updated Debug Test Recipe"
+}
+
+### Delete recipe
+DELETE {{baseUrl}}/api/recipes/{{recipeId}}
+
+### ============================================================
+### MEAL PLANS
+### ============================================================
+
+### List meal plans (paginated)
+GET {{baseUrl}}/api/mealplans?page=1&pageSize=10
+
+### Get meal plan by ID
+GET {{baseUrl}}/api/mealplans/{{mealPlanId}}
+
+### Get meal plans by user
+GET {{baseUrl}}/api/mealplans/user/{{userId}}
+
+### Create meal plan
+POST {{baseUrl}}/api/mealplans
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "name": "Debug Test Meal Plan"
+}
+
+### Update meal plan
+PUT {{baseUrl}}/api/mealplans/{{mealPlanId}}
+Content-Type: application/json
+
+{
+  "name": "Updated Debug Test Meal Plan"
+}
+
+### Delete meal plan
+DELETE {{baseUrl}}/api/mealplans/{{mealPlanId}}
+
+### ============================================================
+### USERS
+### ============================================================
+
+### List users (paginated)
+GET {{baseUrl}}/api/users?page=1&pageSize=10
+
+### Get user by ID
+GET {{baseUrl}}/api/users/{{userId}}
+
+### Get user by email
+GET {{baseUrl}}/api/users/email/test@example.com
+
+### Create user
+POST {{baseUrl}}/api/users
+Content-Type: application/json
+
+{
+  "email": "debug@example.com",
+  "displayName": "Debug User"
+}
+
+### Update user
+PUT {{baseUrl}}/api/users/{{userId}}
+Content-Type: application/json
+
+{
+  "displayName": "Updated Debug User"
+}
+
+### Delete user
+DELETE {{baseUrl}}/api/users/{{userId}}
+
+### ============================================================
+### MIGRATIONS (use with care)
+### ============================================================
+
+### Explore source data structure
+GET {{baseUrl}}/api/migrations/explore?sourceCollection=foundationfoods
+
+### Extract and normalize nutrients from source
+# POST {{baseUrl}}/api/migrations/extract-and-normalize?sourceCollection=foundationfoods
+
+### Create indexes on normalized collections
+# POST {{baseUrl}}/api/migrations/create-indexes
+
+### Run full migration (extract + normalize + index)
+# POST {{baseUrl}}/api/migrations/run-all?sourceCollection=foundationfoods

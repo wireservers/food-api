@@ -138,7 +138,7 @@ public class FoodNutrientRepository : IFoodNutrientRepository
                 return cached;
             }
 
-            var count = await _collection.CountDocumentsAsync(_ => true);
+            var count = await _collection.EstimatedDocumentCountAsync();
             SetCachedCount(count);
             return count;
         }

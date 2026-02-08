@@ -176,7 +176,7 @@ app.UseCors("AllowAll");
 app.UseAuthorization();
 app.MapControllers();
 
-app.MapGet("/", () => Results.Ok("Welcome to Bring The Diet APIß"));
+app.MapGet("/", () => Results.Ok("Welcome to Bring The Diet API"));
 
 
 app.Run();
