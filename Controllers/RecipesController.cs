@@ -86,32 +86,22 @@ public class RecipesController : ControllerBase
             var recipe = new Recipe
             {
                 Title = createDto.Title,
-                Slug = createDto.Slug ?? createDto.Title.ToLower().Replace(" ", "-"),
-                Summary = createDto.Summary,
-                DietTags = createDto.DietTags,
-                Cuisine = createDto.Cuisine,
-                PrepMinutes = createDto.PrepMinutes,
-                CookMinutes = createDto.CookMinutes,
-                Servings = createDto.Servings,
-                Difficulty = createDto.Difficulty,
+                Image = createDto.Image,
+                Diet = createDto.Diet,
+                DietSlug = createDto.DietSlug ?? createDto.Diet?.ToLower().Replace(" ", "-"),
+                PrepTime = createDto.PrepTime,
+                Calories = createDto.Calories,
+                IsFavorite = createDto.IsFavorite,
+                Featured = createDto.Featured,
+                Description = createDto.Description,
                 Ingredients = createDto.Ingredients?.Select(i => new RecipeIngredient
                 {
-                    FdcId = i.FdcId,
                     Name = i.Name,
                     Quantity = i.Quantity,
                     Unit = i.Unit,
                     Notes = i.Notes
                 }).ToList(),
-                Steps = createDto.Steps,
-                Images = createDto.Images,
-                Status = createDto.Status ?? "draft",
-                Nutrition = createDto.Nutrition != null ? new RecipeNutrition
-                {
-                    Calories = createDto.Nutrition.Calories,
-                    Protein = createDto.Nutrition.Protein,
-                    Carbs = createDto.Nutrition.Carbs,
-                    Fat = createDto.Nutrition.Fat
-                } : null
+                Instructions = createDto.Instructions,
             };
 
             var created = await _repository.CreateAsync(recipe);
@@ -134,27 +124,22 @@ public class RecipesController : ControllerBase
                 return NotFound($"Recipe with ID {id} not found");
 
             if (updateDto.Title != null) existing.Title = updateDto.Title;
-            if (updateDto.Summary != null) existing.Summary = updateDto.Summary;
-            if (updateDto.DietTags != null) existing.DietTags = updateDto.DietTags;
-            if (updateDto.Cuisine != null) existing.Cuisine = updateDto.Cuisine;
-            if (updateDto.PrepMinutes.HasValue) existing.PrepMinutes = updateDto.PrepMinutes;
-            if (updateDto.CookMinutes.HasValue) existing.CookMinutes = updateDto.CookMinutes;
-            if (updateDto.Servings.HasValue) existing.Servings = updateDto.Servings;
-            if (updateDto.Difficulty != null) existing.Difficulty = updateDto.Difficulty;
-            if (updateDto.Ingredients != null)
+            if (updateDto.Image != null) existing.Image = updateDto.Image;
+            if (updateDto.Diet != null) existing.Diet = updateDto.Diet;
+            if (updateDto.DietSlug != null) existing.DietSlug = updateDto.DietSlug;
+            if (updateDto.PrepTime.HasValue) existing.PrepTime = updateDto.PrepTime;
+            if (updateDto.Calories.HasValue) existing.Calories = updateDto.Calories;
+            if (updateDto.IsFavorite.HasValue) existing.IsFavorite = updateDto.IsFavorite.Value;
+            if (updateDto.Featured.HasValue) existing.Featured = updateDto.Featured.Value;
+            if (updateDto.Description != null) existing.Description = updateDto.Description;
+            if (updateDto.Ingredients != null) existing.Ingredients = updateDto.Ingredients.Select(i => new RecipeIngredient
             {
-                existing.Ingredients = updateDto.Ingredients.Select(i => new RecipeIngredient
-                {
-                    FdcId = i.FdcId,
-                    Name = i.Name,
-                    Quantity = i.Quantity,
-                    Unit = i.Unit,
-                    Notes = i.Notes
-                }).ToList();
-            }
-            if (updateDto.Steps != null) existing.Steps = updateDto.Steps;
-            if (updateDto.Images != null) existing.Images = updateDto.Images;
-            if (updateDto.Status != null) existing.Status = updateDto.Status;
+                Name = i.Name,
+                Quantity = i.Quantity,
+                Unit = i.Unit,
+                Notes = i.Notes
+            }).ToList();
+            if (updateDto.Instructions != null) existing.Instructions = updateDto.Instructions;
 
             var success = await _repository.UpdateAsync(id, existing);
             if (!success)
@@ -191,40 +176,22 @@ public class RecipesController : ControllerBase
     {
         Id = recipe.Id,
         Title = recipe.Title,
-        Slug = recipe.Slug,
-        Summary = recipe.Summary,
-        DietTags = recipe.DietTags,
-        Cuisine = recipe.Cuisine,
-        PrepMinutes = recipe.PrepMinutes,
-        CookMinutes = recipe.CookMinutes,
-        Servings = recipe.Servings,
-        Difficulty = recipe.Difficulty,
+        Image = recipe.Image,
+        Diet = recipe.Diet,
+        DietSlug = recipe.DietSlug,
+        PrepTime = recipe.PrepTime,
+        Calories = recipe.Calories,
+        IsFavorite = recipe.IsFavorite,
+        Featured = recipe.Featured,
+        Description = recipe.Description,
         Ingredients = recipe.Ingredients?.Select(i => new RecipeIngredientDto
         {
-            FdcId = i.FdcId,
             Name = i.Name,
             Quantity = i.Quantity,
             Unit = i.Unit,
             Notes = i.Notes
         }).ToList(),
-        Steps = recipe.Steps,
-        Images = recipe.Images,
-        Status = recipe.Status,
-        Nutrition = recipe.Nutrition != null ? new RecipeNutritionDto
-        {
-            Calories = recipe.Nutrition.Calories,
-            Protein = recipe.Nutrition.Protein,
-            Carbs = recipe.Nutrition.Carbs,
-            Fat = recipe.Nutrition.Fat,
-            Nutrients = recipe.Nutrition.Nutrients?.Select(n => new NutrientInfoDto
-            {
-                Name = n.Name,
-                Amount = n.Amount,
-                Unit = n.Unit
-            }).ToList()
-        } : null,
-        PublishedAt = recipe.PublishedAt,
-        Verified = recipe.Verified,
+        Instructions = recipe.Instructions,
         CreatedAt = recipe.CreatedAt,
         UpdatedAt = recipe.UpdatedAt
     };

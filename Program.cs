@@ -94,6 +94,7 @@ builder.Services.AddScoped<IFoodRepository, FoodRepository>();
 builder.Services.AddScoped<INutrientRepository, NutrientRepository>();
 builder.Services.AddScoped<IFoodNutrientRepository, FoodNutrientRepository>();
 builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
+builder.Services.AddScoped<IDietTypeRepository, DietTypeRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMealPlanRepository, MealPlanRepository>();
 

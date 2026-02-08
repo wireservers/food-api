@@ -1,4 +1,5 @@
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace BringTheDiet.Api.Models;
@@ -13,50 +14,36 @@ public class Recipe
     [BsonElement("title")]
     public string Title { get; set; } = string.Empty;
 
-    [BsonElement("slug")]
-    public string? Slug { get; set; }
+    [BsonElement("image")]
+    public string? Image { get; set; }
 
-    [BsonElement("summary")]
-    public string? Summary { get; set; }
+    [BsonElement("diet")]
+    public string? Diet { get; set; }
 
-    [BsonElement("dietTags")]
-    public List<string>? DietTags { get; set; }
+    [BsonElement("dietSlug")]
+    public string? DietSlug { get; set; }
 
-    [BsonElement("cuisine")]
-    public string? Cuisine { get; set; }
+    [BsonElement("prepTime")]
+    public int? PrepTime { get; set; }
 
-    [BsonElement("prepMinutes")]
-    public int? PrepMinutes { get; set; }
+    [BsonElement("calories")]
+    public int? Calories { get; set; }
 
-    [BsonElement("cookMinutes")]
-    public int? CookMinutes { get; set; }
+    [BsonElement("isFavorite")]
+    public bool IsFavorite { get; set; }
 
-    [BsonElement("servings")]
-    public int? Servings { get; set; }
+    [BsonElement("featured")]
+    public bool Featured { get; set; }
 
-    [BsonElement("difficulty")]
-    public string? Difficulty { get; set; }
+    [BsonElement("description")]
+    public string? Description { get; set; }
 
     [BsonElement("ingredients")]
+    [BsonSerializer(typeof(IngredientListSerializer))]
     public List<RecipeIngredient>? Ingredients { get; set; }
 
-    [BsonElement("steps")]
-    public List<string>? Steps { get; set; }
-
-    [BsonElement("images")]
-    public List<string>? Images { get; set; }
-
-    [BsonElement("status")]
-    public string? Status { get; set; }
-
-    [BsonElement("nutrition")]
-    public RecipeNutrition? Nutrition { get; set; }
-
-    [BsonElement("publishedAt")]
-    public DateTime? PublishedAt { get; set; }
-
-    [BsonElement("verified")]
-    public bool Verified { get; set; }
+    [BsonElement("instructions")]
+    public List<string>? Instructions { get; set; }
 
     [BsonElement("createdAt")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -68,11 +55,8 @@ public class Recipe
 [BsonIgnoreExtraElements]
 public class RecipeIngredient
 {
-    [BsonElement("fdcId")]
-    public int? FdcId { get; set; }
-
     [BsonElement("name")]
-    public string? Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     [BsonElement("quantity")]
     public double? Quantity { get; set; }
@@ -84,34 +68,62 @@ public class RecipeIngredient
     public string? Notes { get; set; }
 }
 
-[BsonIgnoreExtraElements]
-public class RecipeNutrition
+/// <summary>
+/// Handles mixed ingredient data: deserializes both plain strings and structured objects.
+/// Plain strings are converted to RecipeIngredient with just the Name field.
+/// </summary>
+public class IngredientListSerializer : IBsonSerializer<List<RecipeIngredient>?>
 {
-    [BsonElement("calories")]
-    public double? Calories { get; set; }
+    public Type ValueType => typeof(List<RecipeIngredient>);
 
-    [BsonElement("protein")]
-    public double? Protein { get; set; }
+    object? IBsonSerializer.Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        => Deserialize(context, args);
 
-    [BsonElement("carbs")]
-    public double? Carbs { get; set; }
+    public List<RecipeIngredient>? Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+    {
+        var bsonType = context.Reader.GetCurrentBsonType();
+        if (bsonType == BsonType.Null)
+        {
+            context.Reader.ReadNull();
+            return null;
+        }
 
-    [BsonElement("fat")]
-    public double? Fat { get; set; }
+        var list = new List<RecipeIngredient>();
+        context.Reader.ReadStartArray();
+        while (context.Reader.ReadBsonType() != BsonType.EndOfDocument)
+        {
+            if (context.Reader.CurrentBsonType == BsonType.String)
+            {
+                list.Add(new RecipeIngredient { Name = context.Reader.ReadString() });
+            }
+            else if (context.Reader.CurrentBsonType == BsonType.Document)
+            {
+                list.Add(BsonSerializer.Deserialize<RecipeIngredient>(context.Reader));
+            }
+            else
+            {
+                context.Reader.SkipValue();
+            }
+        }
+        context.Reader.ReadEndArray();
+        return list;
+    }
 
-    [BsonElement("nutrients")]
-    public List<NutrientInfo>? Nutrients { get; set; }
-}
+    public void Serialize(BsonSerializationContext context, BsonSerializationArgs args, List<RecipeIngredient>? value)
+    {
+        if (value == null)
+        {
+            context.Writer.WriteNull();
+            return;
+        }
+        context.Writer.WriteStartArray();
+        foreach (var ingredient in value)
+        {
+            BsonSerializer.Serialize(context.Writer, ingredient);
+        }
+        context.Writer.WriteEndArray();
+    }
 
-[BsonIgnoreExtraElements]
-public class NutrientInfo
-{
-    [BsonElement("name")]
-    public string? Name { get; set; }
-
-    [BsonElement("amount")]
-    public double? Amount { get; set; }
-
-    [BsonElement("unit")]
-    public string? Unit { get; set; }
+    void IBsonSerializer.Serialize(BsonSerializationContext context, BsonSerializationArgs args, object value)
+        => Serialize(context, args, value as List<RecipeIngredient>);
 }
