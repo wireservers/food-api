@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using BringTheDiet.Api.DTOs;
 using BringTheDiet.Api.Models;
@@ -62,6 +63,7 @@ public class MealPlansController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpGet("user/{userId}")]
     public async Task<ActionResult<List<MealPlanDto>>> GetByUserId(string userId)
     {
@@ -78,6 +80,7 @@ public class MealPlansController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<MealPlanDto>> Create([FromBody] CreateMealPlanDto createDto)
     {
@@ -107,6 +110,7 @@ public class MealPlansController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<ActionResult> Update(string id, [FromBody] UpdateMealPlanDto updateDto)
     {
@@ -143,6 +147,7 @@ public class MealPlansController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(string id)
     {

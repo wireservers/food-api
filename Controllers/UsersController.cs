@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using BringTheDiet.Api.DTOs;
 using BringTheDiet.Api.Models;
@@ -5,6 +6,7 @@ using BringTheDiet.Api.Repositories;
 
 namespace BringTheDiet.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class UsersController : ControllerBase

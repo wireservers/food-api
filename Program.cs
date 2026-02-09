@@ -3,6 +3,10 @@ using BringTheDiet.Api.Configuration;
 using BringTheDiet.Api.Migrations;
 using BringTheDiet.Api.Repositories;
 using BringTheDiet.Api.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Diagnostics;
 using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -76,14 +80,22 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
         throw new InvalidOperationException("MongoDB connection string is not configured. Set MONGO_URI environment variable or configure in appsettings.json");
     }
 
-    var settings = MongoClientSettings.FromConnectionString(connectionString);
-    settings.ServerSelectionTimeout = TimeSpan.FromSeconds(60);
-    settings.ConnectTimeout = TimeSpan.FromSeconds(10);
-    settings.SocketTimeout = TimeSpan.FromSeconds(60);
-    settings.MaxConnectionPoolSize = 100;
-    settings.RetryWrites = false;
+    try
+    {
+        var settings = MongoClientSettings.FromConnectionString(connectionString);
+        settings.ServerSelectionTimeout = TimeSpan.FromSeconds(60);
+        settings.ConnectTimeout = TimeSpan.FromSeconds(10);
+        settings.SocketTimeout = TimeSpan.FromSeconds(60);
+        settings.MaxConnectionPoolSize = 100;
+        settings.RetryWrites = false;
 
-    return new MongoClient(settings);
+        return new MongoClient(settings);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[ERROR] Failed to create MongoDB client: {ex.GetType().Name} - {ex.Message}");
+        throw new InvalidOperationException($"Database connection failed: {ex.Message}", ex);
+    }
 });
 
 // Register database service
@@ -100,6 +112,10 @@ builder.Services.AddScoped<IMealPlanRepository, MealPlanRepository>();
 
 // Register migration services
 builder.Services.AddScoped<INutrientMigrationService, NutrientMigrationService>();
+
+// Add Azure AD authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 
 // Add controllers
 builder.Services.AddControllers();
@@ -130,6 +146,31 @@ builder.Services.AddSwaggerGen(c =>
 
     // Enable annotations for better Swagger UI
     c.EnableAnnotations();
+
+    // Add Bearer token authentication to Swagger
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter your Azure AD JWT token"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
 });
 
 // Add CORS
@@ -137,9 +178,13 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin()
+        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+            ?? new[] { "http://localhost:3001", "http://localhost:3000" };
+
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials();
     });
 });
 
@@ -151,12 +196,49 @@ builder.Services.AddHttpsRedirection(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
-// Enable developer exception page only in Development
-if (app.Environment.IsDevelopment())
+// Global error handling — returns JSON for all unhandled exceptions
+app.UseExceptionHandler(errorApp =>
 {
-    app.UseDeveloperExceptionPage();
-}
+    errorApp.Run(async context =>
+    {
+        context.Response.ContentType = "application/json";
+        var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
+        var exception = exceptionFeature?.Error;
+
+        // Database connectivity issues → 503
+        if (exception is InvalidOperationException && exception.Message.Contains("Database connection failed"))
+        {
+            context.Response.StatusCode = 503;
+            await context.Response.WriteAsJsonAsync(new
+            {
+                error = "Service Unavailable",
+                message = "The database is currently unreachable. Please try again later."
+            });
+            return;
+        }
+
+        if (exception is MongoException or TimeoutException)
+        {
+            context.Response.StatusCode = 503;
+            await context.Response.WriteAsJsonAsync(new
+            {
+                error = "Service Unavailable",
+                message = "A database operation failed. Please try again later."
+            });
+            return;
+        }
+
+        // Everything else → 500
+        context.Response.StatusCode = 500;
+        await context.Response.WriteAsJsonAsync(new
+        {
+            error = "Internal Server Error",
+            message = app.Environment.IsDevelopment()
+                ? exception?.Message ?? "An unexpected error occurred."
+                : "An unexpected error occurred."
+        });
+    });
+});
 
 // Enable Swagger for testing (in both Development and Production)
 app.UseSwagger();
@@ -174,6 +256,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 app.UseCors("AllowAll");
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

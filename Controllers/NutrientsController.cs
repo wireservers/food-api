@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using BringTheDiet.Api.DTOs;
@@ -126,6 +127,7 @@ public class NutrientsController : ControllerBase
     /// <summary>
     /// Creates a new nutrient definition
     /// </summary>
+    [Authorize]
     [HttpPost]
     [SwaggerOperation(Summary = "Create nutrient")]
     [ProducesResponseType(typeof(NutrientDto), StatusCodes.Status201Created)]
@@ -155,6 +157,7 @@ public class NutrientsController : ControllerBase
     /// <summary>
     /// Updates an existing nutrient definition
     /// </summary>
+    [Authorize]
     [HttpPut("{id}")]
     [SwaggerOperation(Summary = "Update nutrient")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -185,6 +188,7 @@ public class NutrientsController : ControllerBase
     /// <summary>
     /// Deletes a nutrient definition
     /// </summary>
+    [Authorize]
     [HttpDelete("{id}")]
     [SwaggerOperation(Summary = "Delete nutrient")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

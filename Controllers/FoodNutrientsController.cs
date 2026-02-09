@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using BringTheDiet.Api.DTOs;
@@ -160,6 +161,7 @@ public class FoodNutrientsController : ControllerBase
     /// <summary>
     /// Creates a new food-nutrient relationship
     /// </summary>
+    [Authorize]
     [HttpPost]
     [SwaggerOperation(Summary = "Create food-nutrient relationship")]
     [ProducesResponseType(typeof(FoodNutrientDto), StatusCodes.Status201Created)]
@@ -191,6 +193,7 @@ public class FoodNutrientsController : ControllerBase
     /// <summary>
     /// Bulk creates food-nutrient relationships for a single food
     /// </summary>
+    [Authorize]
     [HttpPost("bulk")]
     [SwaggerOperation(Summary = "Bulk create food nutrients", Description = "Creates multiple nutrient values for a single food")]
     [ProducesResponseType(typeof(List<FoodNutrientDto>), StatusCodes.Status201Created)]
@@ -223,6 +226,7 @@ public class FoodNutrientsController : ControllerBase
     /// <summary>
     /// Deletes all nutrient relationships for a food
     /// </summary>
+    [Authorize]
     [HttpDelete("by-food/{foodId}")]
     [SwaggerOperation(Summary = "Delete all nutrients for a food")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

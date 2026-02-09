@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using BringTheDiet.Api.Migrations;
@@ -7,6 +8,7 @@ namespace BringTheDiet.Api.Controllers;
 /// <summary>
 /// Database migration operations for normalizing nutrition data
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]

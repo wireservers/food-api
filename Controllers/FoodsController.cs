@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using BringTheDiet.Api.DTOs;
@@ -123,6 +124,7 @@ public class FoodsController : ControllerBase
     /// <returns>The newly created food item</returns>
     /// <response code="200">Food created successfully</response>
     /// <response code="500">Internal server error</response>
+    [Authorize]
     [HttpPost]
     [SwaggerOperation(Summary = "Create food", Description = "Creates a new food item in the database")]
     [ProducesResponseType(typeof(FoodDto), StatusCodes.Status200OK)]
@@ -159,6 +161,7 @@ public class FoodsController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<ActionResult> Update(string id, [FromBody] UpdateFoodDto updateDto)
     {
@@ -187,6 +190,7 @@ public class FoodsController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(string id)
     {
