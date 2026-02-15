@@ -109,6 +109,7 @@ builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
 builder.Services.AddScoped<IDietTypeRepository, DietTypeRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMealPlanRepository, MealPlanRepository>();
+builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
 
 // Register migration services
 builder.Services.AddScoped<INutrientMigrationService, NutrientMigrationService>();
