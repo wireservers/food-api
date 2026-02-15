@@ -115,6 +115,7 @@ public class BlogPostsController : ControllerBase
                 Category = createDto.Category,
                 Author = createDto.Author,
                 ReadTime = createDto.ReadTime,
+                Tags = createDto.Tags,
                 Published = createDto.Published,
             };
 
@@ -146,6 +147,7 @@ public class BlogPostsController : ControllerBase
             if (updateDto.Category != null) existing.Category = updateDto.Category;
             if (updateDto.Author != null) existing.Author = updateDto.Author;
             if (updateDto.ReadTime.HasValue) existing.ReadTime = updateDto.ReadTime.Value;
+            if (updateDto.Tags != null) existing.Tags = updateDto.Tags;
             if (updateDto.Published.HasValue) existing.Published = updateDto.Published.Value;
 
             var success = await _repository.UpdateAsync(id, existing);
@@ -191,6 +193,7 @@ public class BlogPostsController : ControllerBase
         Category = post.Category,
         Author = post.Author,
         ReadTime = post.ReadTime,
+        Tags = post.Tags,
         Published = post.Published,
         CreatedAt = post.CreatedAt,
         UpdatedAt = post.UpdatedAt,

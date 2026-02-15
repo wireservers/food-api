@@ -34,6 +34,9 @@ public class BlogPost
     [BsonElement("readTime")]
     public int ReadTime { get; set; }
 
+    [BsonElement("tags")]
+    public List<string>? Tags { get; set; }
+
     [BsonElement("published")]
     public bool Published { get; set; }
 

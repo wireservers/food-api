@@ -11,6 +11,7 @@ public class BlogPostDto
     public string Category { get; set; } = "Nutrition";
     public string Author { get; set; } = string.Empty;
     public int ReadTime { get; set; }
+    public List<string>? Tags { get; set; }
     public bool Published { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
@@ -26,6 +27,7 @@ public class CreateBlogPostDto
     public string Category { get; set; } = "Nutrition";
     public string Author { get; set; } = string.Empty;
     public int ReadTime { get; set; }
+    public List<string>? Tags { get; set; }
     public bool Published { get; set; } = true;
 }
 
@@ -39,5 +41,6 @@ public class UpdateBlogPostDto
     public string? Category { get; set; }
     public string? Author { get; set; }
     public int? ReadTime { get; set; }
+    public List<string>? Tags { get; set; }
     public bool? Published { get; set; }
 }
