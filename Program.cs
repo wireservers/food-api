@@ -57,7 +57,6 @@ builder.Services.Configure<MongoDbSettings>(options =>
     options.Collections.FoodNutrients = mongoSection["Collections:FoodNutrients"] ?? "foodnutrients";
     options.Collections.Recipes = mongoSection["Collections:Recipes"] ?? "recipes";
     options.Collections.Diets = mongoSection["Collections:Diets"] ?? "diettypes";
-    options.Collections.Blog = mongoSection["Collections:Blog"] ?? "blogposts";
     options.Collections.MealPlans = mongoSection["Collections:MealPlans"] ?? "mealplans";
     options.Collections.Users = mongoSection["Collections:Users"] ?? "users";
     options.Collections.Roles = mongoSection["Collections:Roles"] ?? "roles";
@@ -109,8 +108,6 @@ builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
 builder.Services.AddScoped<IDietTypeRepository, DietTypeRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMealPlanRepository, MealPlanRepository>();
-builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
-
 // Register migration services
 builder.Services.AddScoped<INutrientMigrationService, NutrientMigrationService>();
 
@@ -261,7 +258,18 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-app.MapGet("/", () => Results.Ok("Welcome to Bring The Diet API"));
+app.MapGet("/", () => Results.Content("""
+    <!DOCTYPE html>
+    <html>
+    <head><title>WireServers Food API</title></head>
+    <body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0">
+        <div style="text-align:center">
+            <h1>WireServers Food API</h1>
+            <a href="/swagger" style="display:inline-block;padding:12px 24px;background:#0078d4;color:#fff;text-decoration:none;border-radius:6px;font-size:1.1rem">Open Swagger UI</a>
+        </div>
+    </body>
+    </html>
+    """, "text/html"));
 
 
 app.Run();

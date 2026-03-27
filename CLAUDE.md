@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-ASP.NET Core 10 Web API for the nutrition platform. Production-ready with Swagger, repository pattern, and Azure Cosmos DB (MongoDB API) support. Deployed to Azure App Service `bring-the-diet-api-dev`.
+ASP.NET Core 10 Web API for the nutrition platform. Production-ready with Swagger, repository pattern, and Azure Cosmos DB (MongoDB API) support. Deployed to Azure App Services `wireservers-food-api-dev` (dev) and `wireservers-food-api` (prod).
 
 ## Commands
 
@@ -36,7 +36,7 @@ Collection names are configured under `MongoDB.Collections.*` in `appsettings.js
 
 `Controllers` → `Services` → `Repositories` → `MongoDB.Driver`
 
-Resources: Foods, Recipes, Users, MealPlans, Nutrients, Diets, BlogPosts, AuditLogs, Roles, Permissions.
+Resources: Foods, Recipes, Users, MealPlans, Nutrients, Diets, AuditLogs, Roles, Permissions.
 
 ### Count Caching (critical pattern)
 
@@ -66,7 +66,11 @@ Currently **no auth enforcement** — BCrypt password hashing exists only for th
 
 ## CI/CD
 
-- **`.github/workflows/dotnet-build.yml`** — build + test on push/PR to `main`/`dev`
-- **`.github/workflows/azure-deploy-dotnet.yml`** — deploys to `bring-the-diet-api-dev` on push to `dev` branch or manual dispatch via OIDC federation (no secrets stored in artifacts)
+- **`.github/workflows/dev_wireservers-food-api-dev.yml`** — builds and deploys to `wireservers-food-api-dev` on push to `develop` or manual dispatch
+- **`.github/workflows/prod_wireservers-food-api.yml`** — builds and deploys to `wireservers-food-api` on push to `main` or manual dispatch
 
-Required GitHub secrets: `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`.
+Both use OIDC federation (no secrets stored in artifacts).
+
+Required GitHub secrets (dev): `AZUREAPPSERVICE_CLIENTID_407A3C2095FB4780AA2303F94860BE81`, `AZUREAPPSERVICE_TENANTID_86BD5E794A2C44A59A150808BA58AB03`, `AZUREAPPSERVICE_SUBSCRIPTIONID_30592B037665427687ACB27461FADEFB`
+
+Required GitHub secrets (prod): `AZUREAPPSERVICE_CLIENTID_PROD`, `AZUREAPPSERVICE_TENANTID_PROD`, `AZUREAPPSERVICE_SUBSCRIPTIONID_PROD`
