@@ -6,7 +6,7 @@ name: Build and deploy ASP.Net Core app to Azure Web App - wireservers-food-api-
 on:
   push:
     branches:
-      - dev
+      - develop
   workflow_dispatch:
 
 jobs:
