@@ -111,6 +111,16 @@ builder.Services.AddScoped<IMealPlanRepository, MealPlanRepository>();
 // Register migration services
 builder.Services.AddScoped<INutrientMigrationService, NutrientMigrationService>();
 
+// Configure Azure AD from environment variables with appsettings fallback
+var azureAdSection = builder.Configuration.GetSection("AzureAd");
+var tenantId = Environment.GetEnvironmentVariable("AZURE_AD_TENANT_ID") ?? azureAdSection["TenantId"] ?? "";
+var clientId = Environment.GetEnvironmentVariable("AZURE_AD_CLIENT_ID") ?? azureAdSection["ClientId"] ?? "";
+var audience = Environment.GetEnvironmentVariable("AZURE_AD_AUDIENCE") ?? azureAdSection["Audience"] ?? "";
+
+builder.Configuration["AzureAd:TenantId"] = tenantId;
+builder.Configuration["AzureAd:ClientId"] = clientId;
+builder.Configuration["AzureAd:Audience"] = audience;
+
 // Add Azure AD authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
