@@ -66,11 +66,11 @@ Currently **no auth enforcement** — BCrypt password hashing exists only for th
 
 ## CI/CD
 
-- **`.github/workflows/dev_wireservers-food-api-dev.yml`** — builds and deploys to `wireservers-food-api-dev` on push to `develop` or manual dispatch
+- **`.github/workflows/develop_wireservers-food-api-dev.yml`** — builds and deploys to `wireservers-food-api-dev` on push to `develop` or manual dispatch
 - **`.github/workflows/prod_wireservers-food-api.yml`** — builds and deploys to `wireservers-food-api` on push to `main` or manual dispatch
 
 Both use OIDC federation (no secrets stored in artifacts).
 
-Required GitHub secrets (dev): `AZUREAPPSERVICE_CLIENTID_407A3C2095FB4780AA2303F94860BE81`, `AZUREAPPSERVICE_TENANTID_86BD5E794A2C44A59A150808BA58AB03`, `AZUREAPPSERVICE_SUBSCRIPTIONID_30592B037665427687ACB27461FADEFB`
+Required GitHub secrets (dev): `AZUREAPPSERVICE_CLIENTID_143095D5E7DB486A9AA5735ECF214328`, `AZUREAPPSERVICE_TENANTID_25D983CACD3341FBB198A3669D011A09`, `AZUREAPPSERVICE_SUBSCRIPTIONID_4779781FAD4E424A81C9E22171E9FAED`
 
 Required GitHub secrets (prod): `AZUREAPPSERVICE_CLIENTID_PROD`, `AZUREAPPSERVICE_TENANTID_PROD`, `AZUREAPPSERVICE_SUBSCRIPTIONID_PROD`
