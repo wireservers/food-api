@@ -71,6 +71,16 @@ Currently **no auth enforcement** — BCrypt password hashing exists only for th
 
 Both use OIDC federation (no secrets stored in artifacts).
 
-Required GitHub secrets (dev): `AZUREAPPSERVICE_CLIENTID_143095D5E7DB486A9AA5735ECF214328`, `AZUREAPPSERVICE_TENANTID_25D983CACD3341FBB198A3669D011A09`, `AZUREAPPSERVICE_SUBSCRIPTIONID_4779781FAD4E424A81C9E22171E9FAED`
+Required GitHub secrets (dev): `AZUREAPPSERVICE_CLIENTID_44EB82A5CC014AAE9E36591D673BC770`, `AZUREAPPSERVICE_TENANTID_4CCEE8B078FB41F58AC09876DC6777E5`, `AZUREAPPSERVICE_SUBSCRIPTIONID_81B48C5F90E54B60972F2F5A665EC84F`
 
 Required GitHub secrets (prod): `AZUREAPPSERVICE_CLIENTID_PROD`, `AZUREAPPSERVICE_TENANTID_PROD`, `AZUREAPPSERVICE_SUBSCRIPTIONID_PROD`
+
+### Environment Variables (Azure App Service)
+
+Set on both App Services via Configuration → Application Settings:
+
+- `MONGO_URI` — Cosmos DB connection string (required)
+- `DB_NAME` — database name (`foods-test` for dev, `foods-production` for prod)
+- `AZURE_AD_TENANT_ID` — Azure AD tenant ID
+- `AZURE_AD_CLIENT_ID` — Azure AD client/application ID
+- `AZURE_AD_AUDIENCE` — Azure AD audience URI
