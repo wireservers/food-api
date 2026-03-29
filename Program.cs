@@ -121,12 +121,9 @@ builder.Configuration["AzureAd:TenantId"] = tenantId;
 builder.Configuration["AzureAd:ClientId"] = clientId;
 builder.Configuration["AzureAd:Audience"] = audience;
 
-// Add Azure AD authentication (only if configured)
-if (!string.IsNullOrEmpty(clientId))
-{
-    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
-}
+// Add Azure AD authentication — [Authorize] endpoints require a valid JWT
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 
 // Add controllers
 builder.Services.AddControllers();
