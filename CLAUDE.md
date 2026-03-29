@@ -67,13 +67,13 @@ Currently **no auth enforcement** — BCrypt password hashing exists only for th
 ## CI/CD
 
 - **`.github/workflows/develop_wireservers-food-api-dev.yml`** — builds and deploys to `wireservers-food-api-dev` on push to `develop` or manual dispatch
-- **`.github/workflows/prod_wireservers-food-api.yml`** — builds and deploys to `wireservers-food-api` on push to `main` or manual dispatch
+- **`.github/workflows/main_wireservers-food-api.yml`** — builds and deploys to `wireservers-food-api` on push to `main` or manual dispatch
 
 Both use OIDC federation (no secrets stored in artifacts).
 
 Required GitHub secrets (dev): `AZUREAPPSERVICE_CLIENTID_44EB82A5CC014AAE9E36591D673BC770`, `AZUREAPPSERVICE_TENANTID_4CCEE8B078FB41F58AC09876DC6777E5`, `AZUREAPPSERVICE_SUBSCRIPTIONID_81B48C5F90E54B60972F2F5A665EC84F`
 
-Required GitHub secrets (prod): `AZUREAPPSERVICE_CLIENTID_PROD`, `AZUREAPPSERVICE_TENANTID_PROD`, `AZUREAPPSERVICE_SUBSCRIPTIONID_PROD`
+Required GitHub secrets (prod): `AZUREAPPSERVICE_CLIENTID_A8533FA2F56D48EFA8F8DD96B56D0BC8`, `AZUREAPPSERVICE_TENANTID_439DC8A532FC420189E5280C50C9B696`, `AZUREAPPSERVICE_SUBSCRIPTIONID_407FB1216C6044F2A27A3D0CA61CE747`
 
 ### Environment Variables (Azure App Service)
 
